@@ -215,11 +215,22 @@ object SbtIdeaPlugin extends Plugin {
 
     val androidSupport = AndroidSupport(project, projectRoot, buildStruct, settings)
     val dependencyLibs = librariesExtractor.allLibraries.map { lib: IdeaModuleLibRef =>
-      // If this is Android project, change scope of android.jar and Scala library to provided,
-      // to prevent IDEA from dexing them when running.
-      def shouldNotDex(libName: String) = libName.equals("android.jar") || libName.contains(":scala-library:")
-      if (androidSupport.isAndroidProject && shouldNotDex(lib.library.name)) lib.copy(config = IdeaLibrary.ProvidedScope) else lib
+      if (!androidSupport.isAndroidProject) lib
+      else {
+        // If the project is an Android project, we have a list of provided libraries
+        val providedDeps = androidSupport.providedClasspath.map(_.getAbsolutePath)
+
+        // Library classes
+        val libClasses = lib.library.classes.map(_.getAbsolutePath)
+
+        // If all the classes/JARs are provided, set to "provided" scope,
+        // else, do nothing.
+        if (libClasses.forall(providedDeps contains _))
+          lib.copy(config = IdeaLibrary.ProvidedScope)
+        else lib
+      }
     }
+
     SubProjectInfo(baseDirectory, projectName, project.uses.map(_.project).filter(isAggregate).toList, classpathDeps, compileDirectories,
       testDirectories, dependencyLibs, scalaInstance, ideaGroup, None, basePackage, packagePrefix, extraFacets, scalacOptions,
       includeScalaFacet, androidSupport)
