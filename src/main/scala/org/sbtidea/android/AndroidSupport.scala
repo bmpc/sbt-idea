@@ -50,7 +50,7 @@ case class AndroidSupport(projectDefinition: ProjectDefinition[ProjectRef], proj
           <option name="MANIFEST_FILE_RELATIVE_PATH" value={ projectRelativePath(manifest) } />
           <option name="RES_FOLDER_RELATIVE_PATH" value={ projectRelativePath(settings.task(mainResPath in configuration)) }/>
           <option name="ASSETS_FOLDER_RELATIVE_PATH" value={ projectRelativePath(setting(mainAssetsPath in configuration)) } />
-          <option name="LIBS_FOLDER_RELATIVE_PATH" value={ projectRelativePath(setting(Keys.sourceDirectory in configuration) / "libs") } />
+          <option name="LIBS_FOLDER_RELATIVE_PATH" value={ projectRelativePath(setting(unmanagedNativePath in configuration)) } />
           <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
           <option name="CUSTOM_APK_RESOURCE_FOLDER" value="" />
           <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
